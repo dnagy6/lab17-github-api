@@ -8,6 +8,7 @@ Starter Code: Adapted and tailored code based on tutorial provided in class lect
 Date: August 14, 2026
 """
 import requests
+import plotly.express as ex
 
 def fetch_repository_data(language: str) -> dict:
     """Pull repo data from GitHub Rust (REST) API with exception handling."""
@@ -47,7 +48,26 @@ def process_repo_data(response_dict: dict):
 
     return repo_links, stars, hover_texts, repo_names
 
+def create_bar_graph_visual(repo_links: list, stars: list, hover_texts: list, repo_names: list, language: str) -> None:
+    """Creating a bar graph for visual reference of repo information and saving as an HTML file
+       for lab requirements.
+    """
+    title = f"Most-Starred {language.title()} Projects on GitHub"
+    labels = {"x": "Repository", "y": "Stars"}
     
+    fig = ex.bar(
+        x=repo_links,
+        y=stars,
+        title=title,
+        labels=labels,
+        hover_name=repo_names,
+        hover_data={"Description": hover_texts},
+    )
+    
+    output_filename = f"{language.lower()}_repos.html"
+    fig.write_html(output_filename)
+    print(f"Graph saved: '{output_filename}'.")
+
 def main():
     target_language = "rust"
     print(f"Pulling top {target_language.capitalize()} repos.")
@@ -56,11 +76,8 @@ def main():
 
     if response_dict:
         repo_links, stars, hover_texts, repo_names = process_repo_data(response_dict)
-
-        print(f"Pulled {len(repo_names)} repos")
-        print("\nTop 3 repos:")
-        for i in range(3):
-            print(f"-> {repo_names[i]}: {stars[i]} stars | Hover Text: {hover_texts[i][:60]}...")
+        if repo_links:
+            create_bar_graph_visual(repo_links, stars, hover_texts, repo_names, target_language)
 
 
 
