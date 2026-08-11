@@ -21,6 +21,32 @@ def fetch_repository_data(language: str) -> dict:
     except requests.exceptions.RequestException as error:
         print(f"Error fetching data from GitHub API: {error}")
         return{}
+
+def process_repo_data(response_dict: dict):
+    """Pull relevant repo information for plotting on a chart."""
+    if not response_dict or "items" not in response_dict:
+        print("No valid repo data was found")
+        return [], [], [], []
+
+    repo_dicts = response_dict["items"]
+
+    repo_links, stars, hover_texts, repo_names = [], [], [], []
+
+    for repo_dict in repo_dicts:
+        repo_name = repo_dict["name"]
+        repo_url = repo_dict["html_url"]
+
+        repo_links.append(f"<a href='{repo_url}'>{repo_name}</a>")
+        stars.append(repo_dict["stargazers_count"])
+
+        owner = repo_dict["owner"]["login"]
+        description = repo_dict.get ("description") or "Description N/A"
+
+        hover_texts.append(f"Owner: {owner} | Description: {description}")
+        repo_names.append(repo_name)
+
+    return repo_links, stars, hover_texts, repo_names
+
     
 def main():
     target_language = "rust"
@@ -29,9 +55,13 @@ def main():
     response_dict = fetch_repository_data(target_language)
 
     if response_dict:
-        print(f"Success")
-        print(f"Repos found: {response_dict.get('total_count')}")
-        print(f"Items on first page: {len(response_dict.get('items', []))}")
+        repo_links, stars, hover_texts, repo_names = process_repo_data(response_dict)
+
+        print(f"Pulled {len(repo_names)} repos")
+        print("\nTop 3 repos:")
+        for i in range(3):
+            print(f"-> {repo_names[i]}: {stars[i]} stars | Hover Text: {hover_texts[i][:60]}...")
+
 
 
 if __name__ == "__main__":
