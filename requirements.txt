@@ -1,3 +1,5 @@
 certifi==2026.5.20
 pathlib==1.0.1
 pygame-ce==2.5.7
+requests>=2.31.0
+plotly>=5.18.0
