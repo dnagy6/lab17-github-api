@@ -63,6 +63,13 @@ def create_bar_graph_visual(repo_links: list, stars: list, hover_texts: list, re
         hover_name=repo_names,
         hover_data={"Description": hover_texts},
     )
+
+    fig.update_layout(
+        title_font_size=24,
+        xaxis_title_font_size=16,
+        yaxis_title_font_size=16,
+        hoverlabel=dict(bgcolor="white", font_size=12)
+    )
     
     output_filename = f"{language.lower()}_repos.html"
     fig.write_html(output_filename)
